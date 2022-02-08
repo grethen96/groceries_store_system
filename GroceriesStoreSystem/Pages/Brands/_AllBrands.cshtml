@@ -1,0 +1,251 @@
+﻿@model IEnumerable<GroceriesStoreSystem.Models.Brands>
+
+<script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css">
+<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css">
+
+<script src="~/js/allrecords.js"></script>
+
+
+<style>
+
+    thead input {
+        width: 100%;
+    }
+
+    tbody tr:hover {
+        background: lightgray !important;
+        cursor: pointer;
+    }
+
+    tbody tr.selected {
+        background: gray !important;
+    }
+
+    .ag-theme-balham .bigexpense-warning {
+        background-color: sandybrown !important;
+    }
+
+    .ag-theme-balham .bigexpense-breach {
+        background-color: lightcoral !important;
+    }
+
+    .ag-theme-balham .bigexpense-ok {
+        background-color: mediumseagreen !important;
+    }
+
+    a.fas.fa-edit, a.fas.fa-info-circle {
+        font-size: xx-large;
+    }
+
+    a.fas.fa-paperclip {
+        font-size: large;
+    }
+</style>
+
+<!-- Spinner --------------------------->
+<div class="spinner" style="display:none">
+    <div class="center-div">
+        <div class="inner-div">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+
+<div id="view-all">
+    <div class="custom-container" style="padding-left: 1px;">
+        <a class="button" href="/Brand/CreateBrand">Add new brand</a>
+        <input type="button" class="editButton" value="Export in CSV" id="exportCSV" onclick="exportCSV('Brands')" />
+        <input type="button" class="editButton" value="Clear Filters" id="clearFilters" onclick="clearFilters()" />
+        <input type="button" class="editButton" value="Quick Edit" id="editButton" onclick="quickEdit()" />
+        <input type="button" class="editButton" hidden="hidden" value="Save Changes" id="saveButton" onclick="saveChanges()" />
+        <input type="button" class="editButton" hidden="hidden" value="Refresh" id="cancelButton" onclick="cancel()" />
+
+        <div class="example-header">
+            Page Size:
+            <select onchange="onPageSizeChanged()" id="page-size">
+                <option value="20" selected>20</option>
+                <option value="100">100</option>
+                <option value="500">500</option>
+            </select>
+            <input type="text" id="filter-text-box" title="Search in all columns" placeholder="Search..." oninput="onFilterTextBoxChanged()">
+        </div>
+        <div id="myGrid" style="height: 800px;width:110%; padding: 3px; padding-left: initial;" class="ag-theme-balham"></div>
+    </div>
+</div>
+
+
+<script>
+    var quantityList = [];
+    var brandNameList = [];
+    var priceList = [];
+
+    var getIdsOnly = [];
+    var splittedDomainOwner = [];
+    var userRole = "";
+    var fullName = "";
+    var isInAssignedList = false;
+    var userEmail = "";
+
+    var columnDefs = [
+        { field: "brandId", headerName: "Brand Id" },
+        { field: "brandName", headerName: "Brand Name" },
+        { field: "isActive", headerName: "Active" },
+        {
+            field: "action", headerName: "Action", sortable: false, filter: false,
+            cellRenderer: function (params) {
+                return '<a title="Edit" style="color:green;" href="/Brand/EditBrand/' + params.data.brandId + '">Edit</a>' + " | " +
+                    '<a title="Delete"  style="color:red;"  href="#" onclick="DeleteData(' + params.data.brandId + ')">Delete</a>'
+            }
+        },
+    ];
+
+    var gridOptions = {
+        columnDefs: columnDefs,
+        defaultColDef: {
+            width: 150,
+            sortable: true,
+            resizable: true,
+            //  editable: true,
+            filter: true,
+            onCellValueChanged(params) {
+                this.getIdsOnly.push(params.data.brandId);
+            }
+        },
+        pagination: true,
+        paginationPageSize: 20,
+        paginationNumberFormatter: function (params) {
+            return '[' + params.value.toLocaleString() + ']';
+        },
+        rowClassRules: {
+            // row style function
+            'bigexpense-warning': function (params) {
+                var numExpense = params.data.Amount;
+                return numExpense > 20 && numExpense <= 50;
+            },
+            // row style expression
+            'bigexpense-breach': 'data.Amount > 50',
+            'bigexpense-ok': 'data.Amount <=20'
+        }
+    };
+
+    //set pagination selection
+    function onPageSizeChanged(newPageSize) {
+        var value = document.getElementById('page-size').value;
+        gridOptions.api.paginationSetPageSize(Number(value));
+    }
+
+    //set styles of the rows
+    gridOptions.rowStyle = { font: "Times New Roman" };
+    gridOptions.rowHeight = 40;
+
+    var agGridDiv = document.querySelector('#myGrid');
+
+    new agGrid.Grid(agGridDiv, gridOptions);
+
+    agGrid.simpleHttpRequest({
+        url: '/Brand/LoadData',
+    })
+        .then(function (result) {
+            try {
+                var data = result.data;
+                gridOptions.api.setRowData(data);
+                gridOptions.api.paginationGoToPage(0);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        });
+
+    function quickEdit() {
+        if (document.getElementById("editButton").value == "Quick Edit") {
+
+            var arrayColumns = ['brandName'];
+            editColumns(arrayColumns);
+
+            document.getElementById("editButton").value = "Exit Edit Mode";
+            document.getElementById("saveButton").hidden = false;
+            document.getElementById("cancelButton").hidden = false;
+                       
+        }
+        else {
+            var arrayColumns = ['brandName'];
+            stopEditColumns(arrayColumns);
+
+            document.getElementById("editButton").value = "Quick Edit";
+            document.getElementById("saveButton").hidden = true;
+            document.getElementById("cancelButton").hidden = true;
+        }
+    }
+
+    function saveChanges(domain) {
+        if (getIdsOnly.length > 0) {
+            $('.spinner').css('display', 'block');
+            var newRowData = [];
+            gridOptions.api.forEachNode(function (node) {
+                newRowData.push(node.data);
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "/Brand/SaveAllChanges",
+                data: { modifiedIds: getIdsOnly, newData: newRowData },
+                success: function (result) {
+                    $(".spinner").fadeOut('slow');
+                    getIdsOnly = [];//clear array
+                    if (result.data == "success") {
+                        alert("Data was successfully saved!");
+                    }
+                    else {
+                        alert("Something went wrong. Data was not saved.");
+                    }
+                }
+            });
+        }
+        else {
+            alert("There are no changes in data.");
+        }
+    }
+    function cancel() {
+        //gridOptions.api.refreshCells(params);
+        $('.spinner').css('display', 'block');
+
+        agGrid
+            .simpleHttpRequest({
+                url: '/Brand/LoadData',
+            })
+            .then(function (result) {
+                if (result != null) {
+                    var data = result.data;
+                    gridOptions.api.setRowData(data);
+                    gridOptions.api.paginationGoToPage(0);
+                }
+                else {
+                    alert("Error: Data not found.");
+                }
+                $(".spinner").fadeOut('slow');
+            });
+    }
+     function DeleteData(id) {
+        if (confirm("Are you sure you want to delete?")) {
+            Delete(id);
+        }
+        else {
+            return false;
+        }
+    }
+
+    function Delete(id) {
+        var url = '@Url.Content("~/")' + "Brand/Delete";
+
+        $.post(url, { ID: id }, function (data) {
+            if (data) {
+                alert("Successfully deleted!");
+                cancel();
+            } else {
+                alert("Somethinf went wrong! The Delete was not successfull.");
+            }
+        });
+    }
+
+</script>

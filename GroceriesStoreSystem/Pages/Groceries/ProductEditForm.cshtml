@@ -1,0 +1,162 @@
+﻿@model GroceriesStoreSystem.Models.Groceries
+
+@{
+    ViewData["Title"] = "Edit Product";
+    Layout = "_Layout";
+}
+<style>
+    .center {
+        margin: auto;
+        width: 80%;
+        border: 3px solid #73AD21;
+        padding: 10px;
+        padding-top: 2rem;
+        position: relative;
+        top: 10%;
+    }
+
+    .control-label {
+        font-weight: bold;
+    }
+
+    #submitButton {
+        width: 20%;
+        position: relative;
+        top: 1rem
+    }
+
+    #submit {
+        text-align: center;
+    }
+    /*this is for form-group expanding*/
+    @@media (min-width:576px) {
+        .form-group {
+            width: 100%;
+        }
+    }
+
+    @@media (min-width:776px) {
+        .form-group {
+            width: 300%;
+        }
+    }
+
+    @@media (min-width:976px) {
+        .form-group {
+            width: 305%;
+        }
+    }
+
+    @@media (min-width:4000px) {
+        .form-group {
+            width: 305%;
+        }
+    }
+    .form-group {
+        padding-left: 1rem;
+    }
+</style>
+<script type="text/javascript">
+
+    //$(document).ready(function () {
+   
+    //    //$("#Emails").select2();
+
+
+    //}
+</script>
+@* *************************************************************************************   *@
+@*----------- spinner -------------*@
+<div class="spinner" style="display:none">
+    <div class="center-div">
+        <div class="inner-div">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+
+<div class="center">
+    <h1 style="text-align: center;">Change Product Information</h1>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="EditProducts" method="POST" id="form" name="Form" enctype="multipart/form-data" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @* ----  hidden elements ------*@
+                <input type="hidden" asp-for="ProductId" />
+                
+                @*<div class="container" style="width: 305%; display: flex; padding-left:0.5rem">
+
+                </div>*@
+                <!-- Load here the page  ----------------------------------------->
+            <div class="mine">
+                <div class="form-group">
+                    <label asp-for="Created" class="control-label">Date product added:</label>
+                    <input type="datetime" asp-for="Created" class="form-control" readonly />
+                    <span asp-validation-for="Created" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Code" class="control-label">Code:</label>
+                    <input type="text" asp-for="Code" class="form-control" required />
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CategoryId" class="control-label">Category:</label>
+                    <select asp-for="CategoryId" class="form-control" id="Category" asp-items="ViewBag.categories" required>
+                        <option value="">-- Please select a category --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    <div class="invalid-feedback">
+                        Please select a category.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Price" class="control-label">Price for 1 piece:</label>
+                    <input asp-for="Price" class="form-control" required />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="BrandName" class="control-label">Brand Name:</label>
+                    <select asp-for="BrandName" class="form-control" id="Brand" asp-items="ViewBag.brands" required>
+                        <option value="">-- Please select a brand name --</option>
+                    </select>
+                    <span asp-validation-for="BrandName" class="text-danger"></span>
+                </div>
+                <div class="form-group form-check">
+                    <label asp-for="Quantity" class="control-label">Quantity in stock:</label>
+                    <input asp-for="Quantity" class="form-control" required />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                    <div class="invalid-feedback">
+                        Please input a quantity.
+                    </div>
+                </div>
+                <div class="form-group form-check">
+                    <label asp-for="ValidDate" class="control-label">Valid till date:</label>
+                    <input asp-for="ValidDate" class="form-control" required />
+                    <span asp-validation-for="ValidDate" class="text-danger"></span>
+                    <div class="invalid-feedback">
+                        Please add date.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Supplier" class="control-label">Supplier Name:</label>
+                    <input type="text" asp-for="Supplier" class="form-control" required />
+                    <span asp-validation-for="Supplier" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label">Description:</label>
+                    <textarea asp-for="Description" class="form-control" required ></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+            </div>
+                <div class="form-group" id="submit">
+                    <input type="button" id="submitButton" class="btn btn-primary" asp-controller="Home" asp-action="EditProducts" value="Save Changes" onclick="return submitAction('form')" />
+                    <div style="padding-top: 1rem; text-align:left;">
+                        <a asp-controller="Home" asp-action="Index" onclick="return confirm('Are you sure you want to discard the changes?')">Back to List</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

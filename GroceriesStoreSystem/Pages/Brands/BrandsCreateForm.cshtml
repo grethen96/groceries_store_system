@@ -1,0 +1,111 @@
+﻿@model GroceriesStoreSystem.Models.Brands
+
+@{
+    ViewData["Title"] = "CreateBrands";
+    Layout = "_Layout";
+}
+<style>
+    .center {
+        margin: auto;
+        width: 80%;
+        border: 3px solid #73AD21;
+        padding: 10px;
+        padding-top: 2rem;
+        position:relative;
+        top:19%;
+    }
+
+    .control-label {
+        font-weight: bold;
+        padding-top: 1rem;
+    }
+
+    #submitButton {
+        width: 20%;
+        position: relative;
+        top: 1rem
+    }
+
+    #submit {
+        text-align: center;
+    }
+    /*this is for form-group expanding*/
+    @@media (min-width:576px) {
+        .form-group {
+            width: 100%;
+        }
+    }
+
+    @@media (min-width:776px) {
+        .form-group {
+            width: 300%;
+        }
+    }
+
+    @@media (min-width:976px) {
+        .form-group {
+            width: 305%;
+        }
+    }
+
+    @@media (min-width:4000px) {
+        .form-group {
+            width: 305%;
+        }
+    }
+    .form-group {
+        padding-left: 1rem;
+    }
+</style>
+<script type="text/javascript">
+
+
+</script>
+@* ******************************************   *******************************************   *@
+@*----------- spinner -------------*@
+<div class="spinner" style="display:none">
+    <div class="center-div">
+        <div class="inner-div">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+
+<div class="center">
+    <h1 style="text-align: center;">Create New Brand</h1>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form enctype="multipart/form-data" method="POST" id="form" name="Form" asp-action="CreateBrand" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                @*<div class="container" style="width: 305%; display: flex; padding-left:0.5rem">
+
+                    </div>*@
+                <!-- Load here the page  ----------------------------------------->
+            <div class="mine">
+                <div class="form-group">
+                    <label asp-for="BrandName" class="control-label">Brand Name:</label>
+                    <input type="text" asp-for="BrandName" class="form-control" required />
+                    <span asp-validation-for="BrandName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="IsActive" class="control-label">Active Brand:</label>
+                    <input asp-for="IsActive" type="checkbox" class="form-check-input" id="IsActive" name="IsActive" value="true">
+                    <input asp-for="IsActive" name="IsActive" type="hidden" value="false">
+                </div>
+
+            </div>
+                <div class="form-group" id="submit">
+                    <input type="button" id="submitButton" value="Submit" class="btn btn-primary" onclick="return submitAction('form')" />
+                    <div style="padding-top: 1rem; text-align:left;">
+                        <a asp-controller="Home" asp-action="Index" onclick="return confirm('Are you sure you want to discard the changes?')">Back to List</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@*@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}*@

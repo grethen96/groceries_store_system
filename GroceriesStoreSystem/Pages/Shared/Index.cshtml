@@ -1,0 +1,169 @@
+﻿@model GroceriesStoreSystem.Models.Groceries
+@{
+    ViewData["Title"] = "Home page";
+    
+}
+<script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css">
+<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+<link rel="stylesheet" href="~/css/styles.css" />
+
+@if ((string)TempData["Edit"] == "Success")
+{
+    <div class="alert alert-success" id="div">
+        <strong>You have saved the changes successfully!</strong>
+    </div>
+}
+
+@if ((string)TempData["Create"] == "Success")
+{
+    <div class="alert alert-success" id="div">
+        <strong>You have added a new product successfully!</strong>
+    </div>
+}
+
+<style>
+
+    .fas fa-edit, far fa-trash-alt {
+        font-size: x-large;
+    }
+    .button {
+        background-color: #4e73df; /*//#4CAF50;  Green;;   #3339f5;*/
+        border: none;
+        color: white;
+        padding: 10px 7px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+        .button:hover {
+            color: white;
+        }
+
+    .editButton {
+        background-color: white; /*//#4CAF50;  Green;;   #3339f5; #4e73df;*/
+        color: #4e73df; /*blue*/
+        padding: 8px 8px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+        border-color: #4e73df;
+    }
+
+        .editButton:hover {
+            /*color: darkblue;*/
+            background-color: #4e73df;
+            color: white;
+        }
+</style>
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Products List</h1>
+            @*<ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">All Products</li>
+            </ol>*@
+            <!--charts-->
+            @*<div class="row">
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-primary text-white mb-4">
+                    <div class="card-body">Primary Card</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-warning text-white mb-4">
+                    <div class="card-body">Warning Card</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-success text-white mb-4">
+                    <div class="card-body">Success Card</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-danger text-white mb-4">
+                    <div class="card-body">Danger Card</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-area me-1"></i>
+                        Area Chart Example
+                    </div>
+                    <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar me-1"></i>
+                        Bar Chart Example
+                    </div>
+                    <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                </div>
+            </div>
+        </div>*@
+            <!--here starts the datatable example-->
+            <div>
+                <partial name="~/Pages/Groceries/_AllGroceries.cshtml" />
+            </div>
+            @*<div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                DataTable Example
+            </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>*@
+        </div>
+    </main>
+    <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-between small">
+                <div class="text-muted">Copyright &copy; 2022</div>
+                <div>
+                    <a href="#">Privacy Policy</a>
+                    &middot;
+                    <a href="#">Terms &amp; Conditions</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
